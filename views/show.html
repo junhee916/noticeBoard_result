@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script 
+    src="https://code.jquery.com/jquery-3.6.0.min.js" 
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" 
+    crossorigin="anonymous">
+    </script>
+</head>
+<body>
+    <h1>show</h1>
+    <input id="boardShow"></input>
+    <input id="inputCommend">
+    <h2 id="commendSaveBtn">댓글</h2>
+    <h2 id="updateBtn">update</h2>
+    <h2 id="deleteBtn">delete</h2>
+    <script>
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString)
+        const boardId = urlParams.get("boardId")
+        const updateBtn = document.getElementById("updateBtn")
+        const deleteBtn = document.getElementById("deleteBtn")
+        const commendSaveBtn = document.getElementById("commendSaveBtn")
+        $(document).ready(function(){
+            $("#boardShow").empty()
+            $.ajax({
+                type : "GET",
+                url : `/board/show/${boardId}`,
+                headers : {
+                    authorization : `Bearer ${localStorage.getItem("token")}`
+                },
+                success : function(response){
+                    console.log("show token 여부 확인: ", response["board"]["boardData"])
+                    const board = response["board"]["boardData"]
+                    console.log("board id 확인 여부: ", response["board"]["boardData"][0]["id"])
+                    const boardWrite = board[0]["board"]
+                    $("#boardShow").val(boardWrite)
+                }
+            })
+        })
+        updateBtn.addEventListener("click", function(){
+            const board = $("#boardShow").val()
+            $.ajax({
+                type : "POST",
+                url : `/board/update/${boardId}`,
+                headers : {
+                    authorization : `Bearer ${localStorage.getItem("token")}`
+                },
+                data : {
+                    board : board
+                },
+                success : function(response){
+                    alert("수정이 완료되었습니다.")
+                }
+            })
+        })
+        deleteBtn.addEventListener("click", function(){
+            $.ajax({
+                type : "POST",
+                url : `/board/delete/${boardId}`,
+                headers : {
+                    authorization : `Bearer ${localStorage.getItem("token")}`
+                },
+                data : {},
+                success : function(response){
+                    alert("삭제가 완료되었습니다.")
+                    window.location.href = "/index"
+                }
+            })
+        })
+        commendSaveBtn.addEventListener("click", function(){
+            const commend = $("#inputCommend").val()
+            $.ajax({
+                type : "POST",
+                url : `/commend/save/${boardId}`,
+                headers : {
+                    authorization : `Bearer ${localStorage.getItem("token")}`
+                },
+                data : {
+                    commend : commend
+                },
+                success : function(response){
+                    if(response){
+                        alert("댓글 등록이 완료되었습니다.")
+                    }
+                    else{
+                        alert("다시 등록하시기 바랍니다.")
+                    }
+                }
+            })
+        })
+    </script>
+</body>
+</html>

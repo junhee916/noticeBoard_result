@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script 
+    src="https://code.jquery.com/jquery-3.6.0.min.js" 
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" 
+    crossorigin="anonymous">
+    </script>
+</head>
+<body>
+    <h1>login</h1>
+    <div>
+        <div>
+            <div>email</div>
+            <div><input type="email" id="email"></div>
+        </div>
+        <div>
+            <div>password</div>
+            <div><input type="password" id="password"></div>
+        </div>
+    </div>
+    <div>
+        <h2 id="loginBtn">login</h2>
+        <h2 onclick = "window.location.href='/signup'">signup</h2>
+    </div>
+
+    <script>
+        const loginBtn = document.getElementById("loginBtn")
+        loginBtn.addEventListener("click", function(){
+            const email = $("#email").val()
+            const password = $("#password").val()
+            $.ajax({
+                type : "POST",
+                url : "/user/login",
+                data : {
+                    email : email,
+                    password : password
+                },
+                success : function(response){
+                    alert("로그인이 완료되었습니다.")
+                    console.log('token 확인',response)
+                    let token = response.token
+                    console.log("token set 확인: ", token)
+                    localStorage.setItem("token", token)
+                    window.location.href="/index"
+                }
+            })
+        })
+    </script>
+</body>
+</html>

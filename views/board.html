@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script 
+    src="https://code.jquery.com/jquery-3.6.0.min.js" 
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" 
+    crossorigin="anonymous">
+    </script>
+</head>
+<body>
+    <h1>board</h1>
+    <h2>내용을 입력하시오.</h2>
+    <textarea id="board"></textarea>
+    <h2 id="saveBtn">input</h2>
+    <div id="boardView"></div>
+    <script>
+        $(document).ready(function(){
+            $("#boardView").empty()
+            $.ajax({
+                type : "GET",
+                url : "/board",
+                headers : {
+                    authorization : `Bearer ${localStorage.getItem("token")}`
+                },
+                success : function(response){
+                    console.log('board 내용 확인: ',response["boards"]["boardData"])
+                    const boards = response["boards"]["boardData"]
+                    for(board of boards){
+                        const htmlTemp = 
+                        `
+                        <div onclick="window.location.href='/show?boardId=${board["id"]}'">${board["id"]}</div>
+                        <div>${board["board"]}</div>
+                        `
+                        $("#boardView").append(htmlTemp)
+                    }
+                }
+            })
+        })
+        const saveBtn = document.getElementById("saveBtn")
+        saveBtn.addEventListener("click", function(){
+            const board = $("#board").val()
+            $.ajax({
+                type : "POST",
+                url : "/board/save",
+                headers : {
+                    authorization : `Bearer ${localStorage.getItem("token")}`
+                },
+                data : {
+                    board : board
+                },
+                success : function(response){
+                    if(response){
+                        alert("등록이 완료되었습니다.")
+                    }
+                }
+            })
+        })
+    </script>
+</body>
+</html>
